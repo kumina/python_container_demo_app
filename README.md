@@ -21,6 +21,7 @@ What this script shows:
 * A crude example on how to format the output into JSON, so it can more easily
   be parsed by Logstash and ElasticSearch
   * Also, send the logs to stdout
+* Handle a SIGTERM gracefully, as this is how Kubernetes would stop a Pod
 
 ## Todo
 

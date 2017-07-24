@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import http.server
 import prometheus_client
 import json
+import signal
+import threading
 
 # Collecting useful metrics.
 #
@@ -147,4 +150,18 @@ if __name__ == '__main__':
     # you can see that it actually takes a little while before the Pod
     # becomes Healthy.
     httpd.ready = True
+
+    # Simple handler function to show that we we're handling the SIGTERM
+    def do_shutdown(signum, frame):
+        global httpd
+
+        log = { 'my_webserver': { 'message': 'Graceful shutdown.' } }
+        print(json.dumps(log))
+        threading.Thread(target = httpd.shutdown).start()
+        sys.exit(0)
+
+    # We catch the SIGTERM signal here and shut down the HTTPServer
+    signal.signal(signal.SIGTERM, do_shutdown)
+
+    # Forever serve requests. Or at least until we receive the proper signal.
     httpd.serve_forever()
