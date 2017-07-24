@@ -19,6 +19,9 @@ ENV DATABASE_HOST=mysql
 ENV DATABASE_PORT=3306
 ENV SHARED_STORAGE_PATH=/shared
 
+# Explicitly declare our requirements
+COPY requirements.txt /requirements.txt
+
 # Install dependencies of our web application from Alpine's package
 # manager, APK. In this case we also depend on a Python module,
 # prometheus_client, that is only available through Python's own package
@@ -27,7 +30,7 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories 
  && apk --update upgrade \
  && apk add python3 \
  && rm -rf /var/cache/apk/* \
- && pip3 install prometheus_client
+ && pip3 install -r /requirements.txt
 
 # Copy our simple web server into the container image.
 COPY my_webserver.py /bin/my_webserver

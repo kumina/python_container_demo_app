@@ -19,6 +19,7 @@ What this script shows:
 * Readiness check, to determine when a container is done with starting up
 * Sending logs to stdout for easy capture outside of the container (not really
   shown, as this is the default for http.server.BaseHTTPRequestHandler)
+* Explicit declaration of dependencies (via requirements.txt)
 
 ## Todo
 
