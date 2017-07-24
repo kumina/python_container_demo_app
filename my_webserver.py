@@ -3,6 +3,7 @@
 import os
 import http.server
 import prometheus_client
+import json
 
 # Collecting useful metrics.
 #
@@ -99,6 +100,27 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
             s.send_header('Content-Type', 'text/plain')
             s.end_headers()
             s.wfile.write(b'''Not ready yet.''')
+
+    # Here we deal with the log output. This needs to be a unique key, as
+    # ElasticSearch will set a data type for a specific key and will reject
+    # all log messages that contain the same key but with a different data
+    # type. So we start with the top level element 'my_webserver', so all
+    # keys are unique (my_webserver.client_ip, my_webserver.timestamp and
+    # my_webserver.message).
+    #
+    # Note here, that it is left as an exercise for the reader to split up
+    # the content of 'message' even better. This is considered outside the
+    # scope of this example. If you're interested in doing so, check the source
+    # of BaseHTTPRequestHandler and override the method 'log_request'.
+    def log_message(self, format, *args):
+        log = { 'my_webserver':
+                {
+                    'client_ip': self.address_string(),
+                    'timestamp': self.log_date_time_string(),
+                    'message': format%args
+                }
+            }
+        print(json.dumps(log))
 
 if __name__ == '__main__':
     # First we collect the environment variables that were set in either

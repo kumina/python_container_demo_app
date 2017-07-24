@@ -20,10 +20,10 @@ What this script shows:
 * Sending logs to stdout for easy capture outside of the container (not really
   shown, as this is the default for http.server.BaseHTTPRequestHandler)
 * Explicit declaration of dependencies (via requirements.txt)
+* A crude example on how to format the output into JSON, so it can more easily
+  be parsed by Logstash and ElasticSearch
 
 ## Todo
 
-* Format log output as JSON, so we can parse it easily with Logstash and store
-  it in ElasticSearch
 * Horizontal Pod Scaling metrics
 * Actual Deployment specification for Kubernetes
