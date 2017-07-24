@@ -44,7 +44,7 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
         super().__init__(*args, **kwargs)
         self.ready = False
 
-    # This annotation causes the Prometheus client library to measure
+    # This decorator causes the Prometheus client library to measure
     # the running time of this function.
     @REQUEST_LATENCY.time()
     def do_GET(s):
