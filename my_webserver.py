@@ -70,7 +70,11 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
     # This is the liveness check that we setup in Kubernetes for monitoring
     # the instance. A liveness check that fails will trigger a restart of
     # a Pod. Liveness checks are generally performed every 10 seconds (but
-    # this is configurable).
+    # this is configurable). This behaviour makes this check ideal for making
+    # sure the app is still running correctly by adding in additional internal
+    # checks that would trigger a failure of this check in case of problems.
+    # Note that this check will only start being called after the readiness
+    # check has completed correctly, not before.
     def liveness_check(s):
         s.send_response(200)
         s.send_header('Content-Type', 'text/html')
