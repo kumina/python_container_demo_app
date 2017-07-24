@@ -17,11 +17,10 @@ What this script shows:
 * Liveness check, to make sure an unresponsive container will be restarted by
   Kubernetes
 * Readiness check, to determine when a container is done with starting up
-* Sending logs to stdout for easy capture outside of the container (not really
-  shown, as this is the default for http.server.BaseHTTPRequestHandler)
 * Explicit declaration of dependencies (via requirements.txt)
 * A crude example on how to format the output into JSON, so it can more easily
   be parsed by Logstash and ElasticSearch
+  * Also, send the logs to stdout
 
 ## Todo
 
