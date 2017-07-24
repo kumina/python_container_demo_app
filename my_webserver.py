@@ -35,11 +35,6 @@ REQUEST_LATENCY = prometheus_client.Histogram(
 # production applications, it makes a lot more sense to use Twisted or
 # GUnicorn, as these provide better performance/scalability. This
 # application is simple enough that http.server suffices.
-#
-# Notice that this class does not override the log_message() function.
-# By default, this function logs requests to stderr. This is fine in our
-# case, as stderr will be logged by Kubernetes by default. There is no
-# need to write logs into files or to a remote server manually.
 class MyWebpage(http.server.BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
