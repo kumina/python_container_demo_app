@@ -11,6 +11,14 @@ FROM alpine:edge
 # buffering.
 ENV PYTHONUNBUFFERED=1
 
+# It's easy to provide an application with additional environment
+# variables for setting up a 12 factor app.
+ENV LISTEN_PORT=80
+ENV PROM_LISTEN_PORT=8080
+ENV DATABASE_HOST=mysql
+ENV DATABASE_PORT=3306
+ENV SHARED_STORAGE_PATH=/shared
+
 # Install dependencies of our web application from Alpine's package
 # manager, APK. In this case we also depend on a Python module,
 # prometheus_client, that is only available through Python's own package
@@ -23,9 +31,6 @@ RUN echo http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repositories 
 
 # Copy our simple web server into the container image.
 COPY my_webserver.py /bin/my_webserver
-
-# Expose both the public HTTP port and the one that serves metrics.
-EXPOSE 80 8080
 
 # Invoke the Python application directly. If you want, you could add a
 # small shell script in between that invokes some other commands prior

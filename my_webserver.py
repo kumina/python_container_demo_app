@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 import http.server
 import prometheus_client
 
@@ -39,10 +40,23 @@ REQUEST_LATENCY = prometheus_client.Histogram(
 # case, as stderr will be logged by Kubernetes by default. There is no
 # need to write logs into files or to a remote server manually.
 class MyWebpage(http.server.BaseHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ready = False
+
     # This annotation causes the Prometheus client library to measure
     # the running time of this function.
     @REQUEST_LATENCY.time()
     def do_GET(s):
+        if s.path == '/healthz/live':
+            s.liveness_check()
+        elif s.path == '/healthz/ready':
+            s.readiness_check()
+        else:
+            s.default_response()
+
+    # We respond with a simply page on most requests.
+    def default_response(s):
         s.send_response(200)
         s.send_header('Content-Type', 'text/html')
         s.end_headers()
@@ -57,16 +71,59 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
                 </body>
             </html>''')
 
+    # This is the liveness check that we setup in Kubernetes for monitoring
+    # the instance. A liveness check that fails will trigger a restart of
+    # a Pod. Liveness checks are generally performed every 10 seconds (but
+    # this is configurable).
+    def liveness_check(s):
+        s.send_response(200)
+        s.send_header('Content-Type', 'text/html')
+        s.end_headers()
+        s.wfile.write(b'''Ok.''')
+
+    # A readiness check signals can signal to Kubernetes that a Pod is still
+    # initialising itself. Readiness checks are only performed directly after
+    # the startup of a Pod. Once Kubernetes notices that the readiness check
+    # succeeds, it will add the Pod to the Service and the Pod will start
+    # retrieving traffic. No more readiness checks will be performed after this.
+    def readiness_check(s):
+        if self.ready:
+            s.send_response(200)
+            s.send_header('Content-Type', 'text/plain')
+            s.end_headers()
+            s.wfile.write(b'''Ok.''')
+        else:
+            # The actual response does not really matter, as long as it's not
+            # a HTTP 200 status.
+            s.send_response(503)
+            s.send_header('Content-Type', 'text/plain')
+            s.end_headers()
+            s.wfile.write(b'''Not ready yet.''')
 
 if __name__ == '__main__':
-    # Let the Prometheus client export its metrics on port 8080. It is
-    # also possible to integrate these metrics into the public web
+    # First we collect the environment variables that were set in either
+    # the Dockerfile or the Kubernetes Pod specification.
+    listen_port = int(os.getenv('LISTEN_PORT', 80))
+    prom_listen_port = int(os.getenv('PROM_LISTEN_PORT', 8080))
+    database_host = os.getenv('DATABASE_HOST', 'mysql')
+    database_port = int(os.getenv('DATABASE_PORT', 3306))
+    shared_storage_path = os.getenv('SHARED_STORAGE_PATH', '/shared')
+    # Let the Prometheus client export its metrics on a separate port. It
+    # is also possible to integrate these metrics into the public web
     # server under a special URL (e.g., "/metrics"). Using a separate
     # port has the advantage that it's unlikely that the metrics become
     # visible to the public by accident.
-    prometheus_client.start_http_server(8080)
-    # Let our web application run on port 80. It's perfectly fine to run
-    # all of our web applications as root and let them listen on a
-    # privileged port.
-    httpd = http.server.HTTPServer(('0.0.0.0', 80), MyWebpage)
+    prometheus_client.start_http_server(prom_listen_port)
+    # Let our web application run and listen on the specified port. It's
+    # perfectly fine to run # all of our web applications as root and let
+    # them listen on a privileged port.
+    httpd = http.server.HTTPServer(('0.0.0.0', listen_port), MyWebpage)
+    httpd.database_host = database_host
+    httpd.database_port = database_port
+    httpd.shared_storage_path = shared_storage_path
+    # Make sure you have the webserver signal when it's done. You can see
+    # this in action a bit better by adding a delay (time.sleep(5)), so
+    # you can see that it actually takes a little while before the Pod
+    # becomes Healthy.
+    httpd.ready = True
     httpd.serve_forever()
