@@ -76,19 +76,18 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
     # this is configurable). This behaviour makes this check ideal for making
     # sure the app is still running correctly by adding in additional internal
     # checks that would trigger a failure of this check in case of problems.
-    # Note that this check will only start being called after the readiness
-    # check has completed correctly, not before.
+    # If this check fails, the Pod will be restarted.
     def liveness_check(s):
         s.send_response(200)
         s.send_header('Content-Type', 'text/html')
         s.end_headers()
         s.wfile.write(b'''Ok.''')
 
-    # A readiness check signals can signal to Kubernetes that a Pod is still
-    # initialising itself. Readiness checks are only performed directly after
-    # the startup of a Pod. Once Kubernetes notices that the readiness check
-    # succeeds, it will add the Pod to the Service and the Pod will start
-    # retrieving traffic. No more readiness checks will be performed after this.
+    # A readiness check indicates whether a Pod is ready to receive traffic.
+    # Failing a readiness check will not make the Pod restart itself, it will
+    # just be removed as an EndPoint until the check succeeds again. This can
+    # be used to allow a container to do some initialisation during startup and
+    # even to put a Pod in 'maintenance mode'.
     def readiness_check(s):
         if self.ready:
             s.send_response(200)
