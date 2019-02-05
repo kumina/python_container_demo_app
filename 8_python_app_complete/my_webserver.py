@@ -39,9 +39,7 @@ REQUEST_LATENCY = prometheus_client.Histogram(
 # GUnicorn, as these provide better performance/scalability. This
 # application is simple enough that http.server suffices.
 class MyWebpage(http.server.BaseHTTPRequestHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.ready = False
+    ready = False
 
     # This decorator causes the Prometheus client library to measure
     # the running time of this function.
@@ -89,7 +87,7 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
     # be used to allow a container to do some initialisation during startup and
     # even to put a Pod in 'maintenance mode'.
     def readiness_check(s):
-        if self.ready:
+        if s.ready:
             s.send_response(200)
             s.send_header('Content-Type', 'text/plain')
             s.end_headers()
@@ -118,10 +116,11 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
                 {
                     'client_ip': self.address_string(),
                     'timestamp': self.log_date_time_string(),
-                    'message': format%args
+                    'message': format % args
                 }
             }
         print(json.dumps(log))
+
 
 if __name__ == '__main__':
     # First we collect the environment variables that were set in either
@@ -154,9 +153,9 @@ if __name__ == '__main__':
     def do_shutdown(signum, frame):
         global httpd
 
-        log = { 'my_webserver': { 'message': 'Graceful shutdown.' } }
+        log = {'my_webserver': {'message': 'Graceful shutdown.'}}
         print(json.dumps(log))
-        threading.Thread(target = httpd.shutdown).start()
+        threading.Thread(target=httpd.shutdown).start()
         sys.exit(0)
 
     # We catch the SIGTERM signal here and shut down the HTTPServer

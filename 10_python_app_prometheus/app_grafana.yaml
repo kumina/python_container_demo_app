@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: python-demo-app-grafana
+  name: python-demo-app-grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-demo-app-grafana
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: python-demo-app-grafana
+    spec:
+      containers:
+      - args:
+        - cfg:default.auth.anonymous.enabled=true
+        - cfg:default.auth.anonymous.org_role=Admin
+        - cfg:default.paths.provisioning=/provisioning
+        image: grafana/grafana
+        imagePullPolicy: Always
+        name: python-demo-app-grafana
+        ports:
+          - containerPort: 3000
+            name: grafana
+            protocol: TCP
+        resources:
+          requests:
+            cpu: 10m
+            memory: 16Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+          - mountPath: /provisioning/datasources
+            name: config
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: grafanaconf
+        name: config
+---
+apiVersion: v1
+data:
+  promenade_prometheus.yaml: |
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: prometheus:9090/
+kind: ConfigMap
+metadata:
+  name: grafanaconf
+
