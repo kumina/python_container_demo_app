@@ -24,9 +24,12 @@ spec:
         - cfg:default.auth.anonymous.enabled=true
         - cfg:default.auth.anonymous.org_role=Admin
         - cfg:default.paths.provisioning=/provisioning
-        image: grafana/grafana
+        image: grafana/grafana:5.3.0
         imagePullPolicy: Always
         name: python-demo-app-grafana
+        env:
+          - name: GF_PATHS_PROVISIONING
+            value: "/provisioning"
         ports:
           - containerPort: 3000
             name: grafana
@@ -53,13 +56,27 @@ spec:
 ---
 apiVersion: v1
 data:
-  promenade_prometheus.yaml: |
+  python-demo-app.yaml: |
     datasources:
     - name: Prometheus
       type: prometheus
-      access: proxy
-      url: prometheus:9090/
+      url: http://python-demo-app-prometheus:9090
 kind: ConfigMap
 metadata:
   name: grafanaconf
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: python-demo-app-grafana
+spec:
+  ports:
+  - name: grafana
+    port: 3000
+    protocol: TCP
+    targetPort: 9090
+  selector:
+    app: python-demo-app-grafana
+  sessionAffinity: None
+  type: ClusterIP
+#
