@@ -1,0 +1,2 @@
+- check minikube status for the cluster ip
+- edit your /etc/hosts file and add:   <cluster-ip> python-demo-app.nl

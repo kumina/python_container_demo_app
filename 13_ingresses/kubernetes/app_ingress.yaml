@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: python-demo-app-blue
+spec:
+  rules:
+  - host: python-demo-app.nl
+    http:
+      paths:
+      - backend:
+          serviceName: python-demo-app-blue
+          servicePort: 8080
+        path: /blue
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: python-demo-app-green
+spec:
+  rules:
+  - host: python-demo-app.nl
+    http:
+      paths:
+      - backend:
+          serviceName: python-demo-app-green
+          servicePort: 8080
+        path: /green
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: python-demo-app-red
+spec:
+  rules:
+  - host: python-demo-app.nl
+    http:
+      paths:
+      - backend:
+          serviceName: python-demo-app-red
+          servicePort: 8080
+        path: /red
+

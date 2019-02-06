@@ -1,0 +1,122 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: python-demo-app-blue
+  name: python-demo-app-blue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-demo-app-blue
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: python-demo-app-blue
+    spec:
+      containers:
+      - image: kumina/python-demo-app:blue
+        imagePullPolicy: Always
+        name: python-demo-app-blue
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        - containerPort: 9999
+          name: metrics
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: python-demo-app-green
+  name: python-demo-app-green
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-demo-app-green
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: python-demo-app-green
+    spec:
+      containers:
+      - image: kumina/python-demo-app:green
+        imagePullPolicy: Always
+        name: python-demo-app-green
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        - containerPort: 9999
+          name: metrics
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: python-demo-app-red
+  name: python-demo-app-red
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: python-demo-app-red
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: python-demo-app-red
+    spec:
+      containers:
+      - image: kumina/python-demo-app:red
+        imagePullPolicy: Always
+        name: python-demo-app-red
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        - containerPort: 9999
+          name: metrics
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always

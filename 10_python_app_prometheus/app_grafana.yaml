@@ -79,4 +79,3 @@ spec:
     app: python-demo-app-grafana
   sessionAffinity: None
   type: ClusterIP
-#
