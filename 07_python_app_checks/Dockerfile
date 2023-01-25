@@ -1,4 +1,4 @@
-FROM python:3.6-stretch
+FROM python:3.10-bullseye
 ENV PYTHONUNBUFFERED=1
 WORKDIR /usr/src/app
 COPY requirements.txt /requirements.txt

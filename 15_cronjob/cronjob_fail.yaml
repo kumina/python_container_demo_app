@@ -1,7 +1,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: hello
+  name: just-say-hello
 spec:
   schedule: "*/1 * * * *"
   jobTemplate:

@@ -33,14 +33,13 @@ REQUEST_LATENCY = prometheus_client.Histogram(
     'my_webpage_request_latency_seconds',
     'Time it took to process incoming HTTP requests, in seconds.')
 
+ready = False
 
 # A simple HTTP server class that makes use of http.server. For
 # production applications, it makes a lot more sense to use Twisted or
 # GUnicorn, as these provide better performance/scalability. This
 # application is simple enough that http.server suffices.
 class MyWebpage(http.server.BaseHTTPRequestHandler):
-    ready = True
-
     # This decorator causes the Prometheus client library to measure
     # the running time of this function.
     @REQUEST_LATENCY.time()
@@ -52,7 +51,7 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
         else:
             s.default_response()
 
-    # We respond with a simply page on most requests.
+    # We respond with a simple page on most requests.
     def default_response(s):
         s.send_response(200)
         s.send_header('Content-Type', 'text/html')
@@ -87,7 +86,7 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
     # be used to allow a container to do some initialisation during startup and
     # even to put a Pod in 'maintenance mode'.
     def readiness_check(s):
-        if s.ready:
+        if ready:
             s.send_response(200)
             s.send_header('Content-Type', 'text/plain')
             s.end_headers()
@@ -147,9 +146,9 @@ if __name__ == '__main__':
     # this in action a bit better by adding a delay (time.sleep(5)), so
     # you can see that it actually takes a little while before the Pod
     # becomes Healthy.
-    httpd.ready = True
+    ready = True
 
-    # Simple handler function to show that we we're handling the SIGTERM
+    # Simple handler function to show that we are handling the SIGTERM
     def do_shutdown(signum, frame):
         global httpd
 

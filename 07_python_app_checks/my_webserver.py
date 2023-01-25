@@ -12,10 +12,9 @@ REQUEST_LATENCY = prometheus_client.Histogram(
     'my_webpage_request_latency_seconds',
     'Time it took to process incoming HTTP requests, in seconds.')
 
+ready = False
 
 class MyWebpage(http.server.BaseHTTPRequestHandler):
-    ready = False
-
     @REQUEST_LATENCY.time()
     def do_GET(s):
         if s.path == '/healthz/live':
@@ -47,7 +46,7 @@ class MyWebpage(http.server.BaseHTTPRequestHandler):
         s.wfile.write(b'''Ok.''')
 
     def readiness_check(s):
-        if s.ready:
+        if ready:
             s.send_response(200)
             s.send_header('Content-Type', 'text/plain')
             s.end_headers()

@@ -1,4 +1,4 @@
-FROM python:3.6-stretch
+FROM python:3.10-bullseye
 ENV PYTHONUNBUFFERED=1
 
 ENV LISTEN_PORT=8080

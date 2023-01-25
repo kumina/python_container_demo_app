@@ -27,3 +27,32 @@ What this script shows:
 
 * Horizontal Pod Scaling metrics
 * Actual Deployment specification for Kubernetes
+
+## Notes:
+
+* Services are of type Nodeport (because it's used on local dev clusters.)
+
+
+## Helper script
+ENV variable: `BUILD_REGISTRY` can be set when you want to build the image with registry prefix.
+
+Example: `export BUILD_REGISTRY=registry.example.com/common/`
+
+options:
+- first argument is the directory ID to build and run
+- second argument is the action to take
+  * `norun` - will only build the image
+  * `docker` - will build the image and run it in your local docker
+  * `kind` - will build the image and load it into kind and run it on your current context's cluster (which should be kind)
+  * `registry` - will build the image and push it to the registry and run it on your current context's cluster
+  * `(default)`- will build the image without pushing and run it on your current context's cluster
+
+```bash
+./build-run-dir.sh 01 docker 
+
+./build-run-dir.sh 02 kind 
+
+./build-run-dir.sh 03 
+
+BUILD_REGISTRY=registry.example.com/common/ ./build-run-dir.sh 04
+```

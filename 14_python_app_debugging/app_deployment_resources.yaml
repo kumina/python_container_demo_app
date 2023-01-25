@@ -50,8 +50,8 @@ spec:
           successThreshold: 1
         resources:
           requests:
-            cpu: 10m
-            memory: 64Mi
+            cpu: 100m
+            memory: 256Gi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
       imagePullSecrets:

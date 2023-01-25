@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -20,7 +20,7 @@ spec:
         app: python-demo-app
     spec:
       containers:
-      - image: kumina/python-demo-app:9
+      - image: registry.workshop.kumina.net/common/demo-app:09
         imagePullPolicy: Always
         name: python-demo-app
         ports:
@@ -43,18 +43,26 @@ spec:
             port: 80
           initialDelaySeconds: 5
           timeoutSeconds: 5
+          periodSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
         readinessProbe:
           httpGet:
             path: /healthz/ready
             port: 80
           initialDelaySeconds: 5
+          timeoutSeconds: 5
           periodSeconds: 5
+          failureThreshold: 3
+          successThreshold: 1
         resources:
           requests:
             cpu: 100m
             memory: 256Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
+      imagePullSecrets:
+        - name: workshop-registry
       dnsPolicy: ClusterFirst
       restartPolicy: Always
 

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: python-demo-app-blue
@@ -8,11 +8,14 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: python-demo-app-blue
-          servicePort: 8080
+          service:
+            name:  python-demo-app-blue
+            port:
+              number: 8080
         path: /blue
+        pathType: ImplementationSpecific
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: python-demo-app-green
@@ -22,11 +25,14 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: python-demo-app-green
-          servicePort: 8080
+          service:
+            name:  python-demo-app-green
+            port:
+              number: 8080
         path: /green
+        pathType: ImplementationSpecific
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: python-demo-app-red
@@ -36,7 +42,10 @@ spec:
     http:
       paths:
       - backend:
-          serviceName: python-demo-app-red
-          servicePort: 8080
+          service:
+            name:  python-demo-app-red
+            port:
+              number: 8080
         path: /red
+        pathType: ImplementationSpecific
 

@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -25,7 +25,7 @@ spec:
         - --web.enable-lifecycle
         - --storage.tsdb.path=/prometheus
         - --storage.tsdb.retention=2200h
-        image: prom/prometheus:v2.6.0
+        image: prom/prometheus:v2.41.0
         imagePullPolicy: Always
         name: prometheus
         ports:

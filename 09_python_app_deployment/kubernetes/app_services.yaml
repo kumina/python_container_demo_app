@@ -11,7 +11,6 @@ spec:
     targetPort: 80
   selector:
     app: python-demo-app
-  type: NodePort
 ---
 apiVersion: v1
 kind: Service
@@ -26,4 +25,3 @@ spec:
     targetPort: 8080
   selector:
     app: python-demo-app
-  type: NodePort

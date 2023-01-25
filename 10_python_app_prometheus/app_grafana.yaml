@@ -1,4 +1,4 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
@@ -24,7 +24,7 @@ spec:
         - cfg:default.auth.anonymous.enabled=true
         - cfg:default.auth.anonymous.org_role=Admin
         - cfg:default.paths.provisioning=/provisioning
-        image: grafana/grafana:5.3.0
+        image: grafana/grafana:9.3.1
         imagePullPolicy: Always
         name: python-demo-app-grafana
         env:
