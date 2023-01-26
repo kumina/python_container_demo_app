@@ -20,7 +20,8 @@ spec:
         app: python-demo-app
     spec:
       containers:
-      - image: registry.workshop.kumina.net/common/demo-app:09
+      - command: ['/bin/bash', '-c', 'cat /dev/zero | head -c 5G | tail']
+        image: registry.workshop.kumina.net/common/demo-app:09
         imagePullPolicy: Always
         name: python-demo-app
         ports:
@@ -51,17 +52,13 @@ spec:
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
-        volumeMounts:
-          - mountPath: /var/lib/data/
-            name: data
       imagePullSecrets:
         - name: workshop-registry
       dnsPolicy: ClusterFirst
       restartPolicy: Always
-      volumes:
-        - name: data
-          persistentVolumeClaim:
-            claimName: non-existing
